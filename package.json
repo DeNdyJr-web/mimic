@@ -1,0 +1,10 @@
+{
+  "name": "mimic",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MIMIC — server-authoritative social deduction game (React frontend + Express/Socket.IO backend).",
+  "scripts": {
+    "build": "npm install --prefix frontend && npm run build --prefix frontend && npm install --prefix backend && npm run build --prefix backend",
+    "start": "node backend/dist/index.js"
+  }
+}

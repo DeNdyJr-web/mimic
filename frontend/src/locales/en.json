@@ -1,0 +1,154 @@
+{
+  "home": {
+    "title": "MIMIC",
+    "menu": {
+      "joinLobby": "Join Lobby",
+      "createLobby": "Create Lobby",
+      "settings": "Settings"
+    },
+    "footer": {
+      "about": "about",
+      "github": "github",
+      "credits": "credits",
+      "versions": "versions"
+    },
+    "modals": {
+      "settings": {
+        "title": "Settings",
+        "theme": {
+          "label": "Theme",
+          "system": "System",
+          "dark": "Dark",
+          "light": "Light"
+        },
+        "language": {
+          "label": "Language",
+          "options": {
+            "englishUs": "English (US)",
+            "englishUk": "English (UK)",
+            "russian": "Русский",
+            "ukrainian": "Українська",
+            "spanish": "Español",
+            "german": "Deutsch"
+          },
+          "apply": "Apply"
+        }
+      },
+      "about": {
+        "title": "About MIMIC",
+        "text": "MIMIC is a LAN social deduction chat game for 3–15 players. Everyone receives a random animal identity. One player is secretly the Mimic and gets a target player to imitate in style, tone, and habits — while ordinary players try to spot the impostor.\n\nRules:\n• Discuss in chat during each round, then vote when the timer ends.\n• Eliminated players become spectators (they cannot chat or vote), and their true role stays hidden until the very end.\n• Voting Skip skips elimination; if all active players vote Skip, the match ends immediately.\n• Ordinary players win only if the Mimic is eliminated without exceeding the allowed mistake limit (1 wrong elimination per 3 starting players). Otherwise, the Mimic wins."
+      },
+      "credits": {
+        "title": "Credits",
+        "text": "Created by DeNdyJr.\nBuilt with React, TypeScript, Express, and Socket.IO.\nSource code: github.com/DeNdyJr-web/mimic"
+      },
+      "versions": {
+        "title": "Versions",
+        "current": {
+          "version": "1.0.0",
+          "releaseDate": "2026-11-16",
+          "notes": "v1.0.0 — Initial release: LAN multiplayer lobbies, secret Mimic & target assignment, blind multi-round voting, spectator mode, Dark/Light themes, and 6 languages."
+        }
+      }
+    }
+  },
+  "join": {
+    "back": "Back",
+    "title": "Join Lobby",
+    "codePlaceholder": "Enter a code...",
+    "joinButton": "Join",
+    "or": "or",
+    "findLobby": "Find a lobby",
+    "refresh": "Refresh rooms",
+    "loading": "Searching for lobbies…",
+    "empty": "No active lobbies on this host right now.",
+    "noCodeError": "Please enter a code to join."
+  },
+  "create": {
+    "back": "Back",
+    "title": "Create Lobby",
+    "namePlaceholder": "Enter lobby name...",
+    "settingsHeader": "Game settings",
+    "default": "Default",
+    "durationLabel": "Round duration (minutes)",
+    "targetLabel": "Change Mimic target",
+    "toggleTargetOnHelp": "New target each round",
+    "toggleTargetOffHelp": "Keep the previous target if it's still valid",
+    "footerNote": "You will not be able to change the settings after creating a lobby.",
+    "submitButton": "Create",
+    "createdSuccess": "Lobby created — enter the lobby."
+  },
+  "lobby": {
+    "listPlayers": "List of players",
+    "playersCount": "{{count}} players",
+    "leave": "Leave",
+    "codeCopiedToast": "The code has been copied!",
+    "start": "Start",
+    "youSuffix": "(you)",
+    "hostSuffix": "(host)",
+    "codeButton": "Lobby code",
+    "workspaceComing": "Waiting for the host to start the game.",
+    "kick": "Kick",
+    "ban": "Ban",
+    "banAria": "Ban {{alias}} from the lobby",
+    "copyClose": "Dismiss notification",
+    "startRequiresMin": "Need at least {{required}} players to start."
+  },
+  "roleCard": {
+    "youAreMimic": "You are ",
+    "mimicKeyword": "mimic",
+    "yourTargetPrefix": "Your target is ",
+    "findMimic": "Find mimic"
+  },
+  "chat": {
+    "placeholder": "Write a message...",
+    "send": "Send",
+    "maxLengthExceeded": "Message must be {{max}} characters or fewer.",
+    "tooShort": "Message is too short.",
+    "system": {
+      "joined": "{{alias}} joined the game",
+      "left": "{{alias}} left the game",
+      "kicked": "{{alias}} has been kicked",
+      "banned": "{{alias}} has been banned"
+    },
+    "scrollToBottom": "Scroll to bottom"
+  },
+  "voting": {
+    "timerLabel": "Voting ends in {{time}}",
+    "skip": "Skip",
+    "vote": "Vote",
+    "eliminated": "{{alias}} was eliminated",
+    "noOneEliminated": "No one was eliminated",
+    "votesReceived": "{{alias}}: {{count}} votes",
+    "yourVote": "Cast your vote",
+    "cannotChange": "Your vote cannot be changed."
+  },
+  "reveal": {
+    "mimicWas": "The mimic was...",
+    "won": "You won!",
+    "lost": "You lost!"
+  },
+  "errors": {
+    "generic": "Something went wrong.",
+    "invalidCode": "That code is invalid or unknown.",
+    "roomNotFound": "No lobby found for that code.",
+    "nameTooShort": "Lobby name must be at least {{min}} characters.",
+    "tooLong": "Lobby name is too long (max {{max}} characters).",
+    "minPlayers": "{{current}} players joined — at least {{required}} are needed to start.",
+    "timeout": "The round has ended.",
+    "banned": "You have been banned from this lobby.",
+    "kicked": "You have been kicked from this lobby.",
+    "aliasInvalid": "That name is taken or invalid (1-40 characters).",
+    "invalidAvatar": "That avatar isn't available.",
+    "sessionReplaced": "You're already playing in another tab.",
+    "gameStarted": "This game has already started"
+  },
+  "profile": {
+    "title": "Edit Profile",
+    "avatarHeading": "Avatar",
+    "nameLabel": "Name",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close"
+  }
+}

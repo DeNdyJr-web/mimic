@@ -1,0 +1,154 @@
+{
+  "home": {
+    "title": "",
+    "menu": {
+      "joinLobby": "",
+      "createLobby": "",
+      "settings": ""
+    },
+    "footer": {
+      "about": "",
+      "github": "",
+      "credits": "",
+      "versions": ""
+    },
+    "modals": {
+      "settings": {
+        "title": "",
+        "theme": {
+          "label": "",
+          "system": "",
+          "dark": "",
+          "light": ""
+        },
+        "language": {
+          "label": "",
+          "options": {
+            "englishUs": "",
+            "englishUk": "",
+            "russian": "",
+            "ukrainian": "",
+            "spanish": "",
+            "german": ""
+          },
+          "apply": ""
+        }
+      },
+      "about": {
+        "title": "",
+        "text": ""
+      },
+      "credits": {
+        "title": "",
+        "text": ""
+      },
+      "versions": {
+        "title": "",
+        "current": {
+          "version": "",
+          "releaseDate": "",
+          "notes": ""
+        }
+      }
+    }
+  },
+  "join": {
+    "back": "",
+    "title": "",
+    "codePlaceholder": "",
+    "joinButton": "",
+    "or": "",
+    "findLobby": "",
+    "refresh": "",
+    "loading": "",
+    "empty": "",
+    "noCodeError": ""
+  },
+  "create": {
+    "back": "",
+    "title": "",
+    "namePlaceholder": "",
+    "settingsHeader": "",
+    "default": "",
+    "durationLabel": "",
+    "targetLabel": "",
+    "toggleTargetOnHelp": "",
+    "toggleTargetOffHelp": "",
+    "footerNote": "",
+    "submitButton": "",
+    "createdSuccess": ""
+  },
+  "lobby": {
+    "listPlayers": "",
+    "playersCount": "",
+    "leave": "",
+    "codeCopiedToast": "",
+    "start": "",
+    "youSuffix": "",
+    "hostSuffix": "",
+    "codeButton": "",
+    "workspaceComing": "",
+    "kick": "",
+    "ban": "",
+    "banAria": "",
+    "copyClose": "",
+    "startRequiresMin": ""
+  },
+  "roleCard": {
+    "youAreMimic": "",
+    "mimicKeyword": "",
+    "yourTargetPrefix": "",
+    "findMimic": ""
+  },
+  "chat": {
+    "placeholder": "",
+    "send": "",
+    "maxLengthExceeded": "",
+    "tooShort": "",
+    "system": {
+      "joined": "",
+      "left": "",
+      "kicked": "",
+      "banned": ""
+    },
+    "scrollToBottom": ""
+  },
+  "voting": {
+    "timerLabel": "",
+    "skip": "",
+    "vote": "",
+    "eliminated": "",
+    "noOneEliminated": "",
+    "votesReceived": "",
+    "yourVote": "",
+    "cannotChange": ""
+  },
+  "reveal": {
+    "mimicWas": "",
+    "won": "",
+    "lost": ""
+  },
+  "errors": {
+    "generic": "",
+    "invalidCode": "",
+    "roomNotFound": "",
+    "nameTooShort": "",
+    "tooLong": "",
+    "minPlayers": "",
+    "timeout": "",
+    "banned": "",
+    "kicked": "",
+    "aliasInvalid": "",
+    "invalidAvatar": "",
+    "sessionReplaced": "",
+    "gameStarted": ""
+  },
+  "profile": {
+    "title": "",
+    "avatarHeading": "",
+    "nameLabel": "",
+    "save": "",
+    "cancel": "",
+    "close": ""
+  }
+}

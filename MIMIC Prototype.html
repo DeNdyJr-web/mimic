@@ -1,0 +1,2302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MIMIC</title>
+  <style>
+    :root {
+      --bg-canvas: #141414;
+      --bg-sidebar: #1f1f1f;
+      --border-subtle: #333333;
+      --surface-card: #525252;
+      --surface-card-border: #6e6e6e;
+      --surface-divider: #666666;
+      --surface-player: #4d4d4d;
+      --surface-player-eliminated: #292929;
+      --surface-role-card: #2b2b2b;
+      --btn-primary: #525252;
+      --btn-secondary: #6e6e6e;
+      --btn-hover: #a6a6a6;
+      --btn-active: #a6a6a6;
+      --dropdown-trigger-bg: #666666;
+      --dropdown-trigger-border: #8e8e8e;
+      --dropdown-menu-bg: #383838;
+      --dropdown-item-bg: #545454;
+      --dropdown-item-hover: #757575;
+      --input-border: #787878;
+      --chat-bar-bg: #242424;
+      --chat-bubble-other: #242424;
+      --chat-bubble-self: #4d4d4d;
+      --text-title: #d6d6d6;
+      --text-primary: #ffffff;
+      --text-muted: #a3a3a3;
+      --text-eliminated: #666666;
+      --text-placeholder: #787878;
+      --text-footer: #5c5c5c;
+      --avatar-black: #000000;
+      --avatar-red: #f22b29;
+      --avatar-cyan: #0095b6;
+      --avatar-green: #00b853;
+      --avatar-blue: #1505b5;
+      --avatar-purple: #6a21f3;
+      --avatar-orange: #f56014;
+      --avatar-yellow: #f5d742;
+      --avatar-lavender: #c668e6;
+      --avatar-skyblue: #38a3f5;
+      --avatar-lime: #b6f558;
+      --avatar-white: #ffffff;
+      --transition-fast: 150ms cubic-bezier(0.22, 1, 0.36, 1);
+      --transition-smooth: 240ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-canvas);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+      color: inherit;
+      outline: none;
+    }
+
+    input {
+      user-select: text;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+    }
+
+    /* =========================
+       SCREEN MANAGEMENT
+    ========================= */
+    .screen {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-canvas);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-smooth);
+    }
+
+    .screen.is-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* =========================
+       1. HOME SCREEN
+    ========================= */
+    .home-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .home-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: translateY(-28px);
+    }
+
+    .home-title {
+      font-size: clamp(64px, 6.8vw, 130px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: var(--text-title);
+      margin-bottom: clamp(56px, 6.2vw, 118px);
+    }
+
+    .home-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: min(418px, 84vw);
+    }
+
+    .pill-btn {
+      width: 100%;
+      height: 42px;
+      border-radius: 9999px;
+      background-color: var(--btn-primary);
+      color: var(--text-primary);
+      font-size: 16px;
+      font-weight: 400;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--transition-fast), transform 100ms ease;
+    }
+
+    .pill-btn:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .pill-btn:active {
+      transform: scale(0.985);
+    }
+
+    .home-footer {
+      position: fixed;
+      bottom: 18px;
+      left: 0;
+      right: 0;
+      padding: 0 clamp(28px, 6.2vw, 120px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-footer);
+    }
+
+    .footer-group {
+      display: flex;
+      align-items: center;
+      gap: clamp(32px, 3.3vw, 64px);
+    }
+
+    .footer-link {
+      background: transparent;
+      color: var(--text-footer);
+      font-size: 12px;
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    .footer-link:hover {
+      color: #b5b5b5;
+    }
+
+    /* =========================
+       MODALS (Settings, About, Credits, Versions)
+    ========================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(20, 20, 20, 0.94);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-smooth);
+    }
+
+    .modal-backdrop.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      width: min(520px, 90vw);
+      height: 465px;
+      background-color: var(--surface-card);
+      border: 1px solid var(--surface-card-border);
+      border-radius: 36px;
+      display: flex;
+      flex-direction: column;
+      overflow: visible;
+      transform: scale(0.97);
+      transition: transform var(--transition-smooth);
+    }
+
+    .modal-backdrop.is-open .modal-card {
+      transform: scale(1);
+    }
+
+    .card-header {
+      height: 68px;
+      padding: 0 22px 0 34px;
+      border-bottom: 1px solid var(--surface-divider);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .card-title {
+      font-size: 23px;
+      font-weight: 400;
+      color: var(--text-primary);
+    }
+
+    .circle-icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background-color: var(--btn-secondary);
+      color: var(--text-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background-color var(--transition-fast), transform 100ms ease;
+    }
+
+    .circle-icon-btn:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .circle-icon-btn:active {
+      transform: scale(0.95);
+    }
+
+    .modal-body {
+      padding: 30px 34px;
+      font-size: 16px;
+      line-height: 1.45;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .about-paragraph + .about-paragraph {
+      margin-top: 22px;
+    }
+
+    /* Settings Controls & Custom Dropdowns */
+    .settings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      height: 36px;
+    }
+
+    .setting-label {
+      font-size: 16px;
+      color: var(--text-primary);
+    }
+
+    .dropdown-wrapper {
+      position: relative;
+      width: 196px;
+      height: 36px;
+    }
+
+    .dropdown-trigger {
+      width: 100%;
+      height: 36px;
+      border-radius: 8px;
+      background-color: var(--dropdown-trigger-bg);
+      border: 1px solid var(--dropdown-trigger-border);
+      color: var(--text-primary);
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    .dropdown-trigger:hover {
+      background-color: var(--btn-hover);
+      border-color: var(--btn-hover);
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: -10px;
+      right: -12px;
+      width: 220px;
+      max-height: 196px;
+      background-color: var(--dropdown-menu-bg);
+      border-radius: 12px;
+      padding: 10px 14px 10px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+      z-index: 30;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-4px) scale(0.98);
+      transition: opacity var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .dropdown-menu.is-open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .dropdown-menu::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .dropdown-menu::-webkit-scrollbar-track {
+      background: transparent;
+      margin: 10px 0;
+    }
+
+    .dropdown-menu::-webkit-scrollbar-thumb {
+      background-color: #666666;
+      border-radius: 9999px;
+    }
+
+    .dropdown-option {
+      width: 100%;
+      min-height: 34px;
+      border-radius: 8px;
+      background-color: var(--dropdown-item-bg);
+      color: var(--text-primary);
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background-color var(--transition-fast);
+    }
+
+    .dropdown-option:hover {
+      background-color: var(--dropdown-item-hover);
+    }
+
+    .dropdown-option.is-selected {
+      background-color: var(--btn-active);
+    }
+
+    /* =========================
+       SHARED SUB-SCREEN HEADER (Join & Create Lobby)
+    ========================= */
+    .sub-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: clamp(56px, 5.2vw, 98px);
+    }
+
+    .back-btn {
+      position: fixed;
+      top: 28px;
+      left: 30px;
+      width: 132px;
+      height: 42px;
+      border-radius: 9999px;
+      background-color: var(--btn-primary);
+      color: var(--text-primary);
+      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--transition-fast), transform 100ms ease;
+      z-index: 10;
+    }
+
+    .back-btn:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .back-btn:active {
+      transform: scale(0.98);
+    }
+
+    .sub-title {
+      font-size: clamp(46px, 4.4vw, 84px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-title);
+      margin-bottom: clamp(32px, 3.6vw, 66px);
+    }
+
+    /* =========================
+       2. JOIN LOBBY SCREEN
+    ========================= */
+    .join-code-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: min(603px, 90vw);
+    }
+
+    .dark-input {
+      height: 42px;
+      background-color: var(--bg-canvas);
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 15px;
+      text-align: center;
+      padding: 0 16px;
+      transition: border-color var(--transition-fast);
+    }
+
+    .dark-input::placeholder {
+      color: var(--text-placeholder);
+    }
+
+    .dark-input:focus {
+      border-color: var(--btn-hover);
+    }
+
+    .join-code-input {
+      flex: 1;
+    }
+
+    .rect-action-btn {
+      height: 42px;
+      border-radius: 10px;
+      background-color: var(--btn-primary);
+      color: var(--text-primary);
+      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--transition-fast), transform 100ms ease;
+    }
+
+    .rect-action-btn:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .rect-action-btn:active {
+      transform: scale(0.985);
+    }
+
+    .join-code-btn {
+      width: 155px;
+      flex-shrink: 0;
+    }
+
+    .or-divider {
+      width: min(1000px, 86vw);
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin: clamp(22px, 2.2vw, 38px) 0;
+      color: var(--text-title);
+      font-size: 16px;
+    }
+
+    .or-line {
+      flex: 1;
+      height: 1px;
+      background-color: var(--input-border);
+    }
+
+    .panel-card {
+      width: min(655px, 90vw);
+      height: min(435px, 46vh);
+      min-height: 360px;
+      background-color: var(--surface-card);
+      border: 1px solid var(--surface-card-border);
+      border-radius: 36px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-card .card-header {
+      padding: 0 24px 0 28px;
+    }
+
+    .refresh-icon {
+      transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .refresh-btn.is-spinning .refresh-icon {
+      transform: rotate(360deg);
+    }
+
+    .lobby-list-scroll {
+      flex: 1;
+      padding: 18px 18px 18px 24px;
+      overflow-y: scroll;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .lobby-list-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .lobby-list-scroll::-webkit-scrollbar-track {
+      background: transparent;
+      margin: 18px 0;
+    }
+
+    .lobby-list-scroll::-webkit-scrollbar-thumb {
+      background-color: var(--btn-secondary);
+      border-radius: 9999px;
+    }
+
+    .lobby-list-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .lobby-name-pill {
+      flex: 1;
+      height: 42px;
+      border-radius: 12px;
+      background-color: var(--btn-secondary);
+      color: var(--text-primary);
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+    }
+
+    .lobby-row-join-btn {
+      width: 155px;
+      height: 42px;
+      border-radius: 12px;
+      background-color: var(--btn-secondary);
+      color: var(--text-primary);
+      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--transition-fast), transform 100ms ease;
+    }
+
+    .lobby-row-join-btn:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .lobby-row-join-btn:active {
+      transform: scale(0.985);
+    }
+
+    /* =========================
+       3. CREATE LOBBY SCREEN
+    ========================= */
+    .create-name-input {
+      width: min(655px, 90vw);
+      margin-bottom: 24px;
+    }
+
+    .default-pill-btn {
+      width: 155px;
+      height: 42px;
+      border-radius: 9999px;
+      background-color: var(--btn-secondary);
+      color: var(--text-primary);
+      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--transition-fast), transform 100ms ease;
+    }
+
+    .default-pill-btn:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .default-pill-btn:active {
+      transform: scale(0.98);
+    }
+
+    .settings-card-body {
+      flex: 1;
+      padding: 22px 28px 14px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .setting-block-title {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+    }
+
+    .duration-grid {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .duration-btn {
+      width: 38px;
+      height: 36px;
+      border-radius: 8px;
+      background-color: var(--btn-secondary);
+      color: var(--text-primary);
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--transition-fast), transform 100ms ease;
+    }
+
+    .duration-btn:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .duration-btn.is-selected {
+      background-color: var(--btn-active);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .toggle-pill-btn {
+      height: 42px;
+      min-width: 72px;
+      padding: 0 22px;
+      border-radius: 9999px;
+      background-color: var(--btn-secondary);
+      color: var(--text-primary);
+      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--transition-fast), transform 100ms ease;
+    }
+
+    .toggle-pill-btn:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .toggle-pill-btn.is-selected {
+      background-color: var(--btn-active);
+    }
+
+    .toggle-help-list {
+      font-size: 11.5px;
+      line-height: 1.48;
+      color: var(--text-muted);
+    }
+
+    .toggle-help-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .toggle-help-tag {
+      font-weight: 700;
+      min-width: 24px;
+    }
+
+    .card-bottom-note {
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .create-submit-btn {
+      width: min(655px, 90vw);
+      margin-top: 24px;
+    }
+
+    /* =========================
+       4. LOBBY & IN-GAME WORKSPACE SCREEN
+    ========================= */
+    .lobby-screen {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .lobby-topbar {
+      height: 58px;
+      background-color: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .lobby-topbar-left {
+      width: clamp(340px, 28.5vw, 548px);
+      padding: 0 46px 0 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 16px;
+      color: var(--text-primary);
+      flex-shrink: 0;
+    }
+
+    .lobby-topbar-right {
+      flex: 1;
+      padding: 0 14px 0 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 16px;
+      color: var(--text-primary);
+    }
+
+    .topbar-interactive-label {
+      cursor: pointer;
+      transition: color var(--transition-fast);
+    }
+
+    .topbar-interactive-label:hover {
+      color: var(--btn-hover);
+    }
+
+    .leave-btn {
+      width: 132px;
+      height: 42px;
+      border-radius: 9999px;
+      background-color: var(--btn-primary);
+      color: var(--text-primary);
+      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--transition-fast), transform 100ms ease;
+    }
+
+    .leave-btn:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .leave-btn:active {
+      transform: scale(0.98);
+    }
+
+    .lobby-workspace {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+    }
+
+    .lobby-sidebar {
+      width: clamp(340px, 28.5vw, 548px);
+      background-color: var(--bg-sidebar);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .player-list {
+      flex: 1;
+      padding: 32px 24px 20px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      overflow-y: auto;
+    }
+
+    .player-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .player-list::-webkit-scrollbar-track {
+      background: transparent;
+      margin: 28px 0 12px 0;
+    }
+
+    .player-list::-webkit-scrollbar-thumb {
+      background-color: var(--btn-secondary);
+      border-radius: 9999px;
+    }
+
+    .player-card {
+      height: 76px;
+      border-radius: 18px;
+      background-color: var(--surface-player);
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-shrink: 0;
+      transition: background-color var(--transition-fast), opacity var(--transition-fast);
+    }
+
+    .player-card.is-eliminated {
+      background-color: var(--surface-player-eliminated);
+    }
+
+    .player-card.is-eliminated .player-name {
+      color: var(--text-eliminated);
+    }
+
+    .player-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .player-avatar {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .player-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color var(--transition-fast);
+    }
+
+    .host-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .mod-btn {
+      width: 96px;
+      height: 42px;
+      border-radius: 9999px;
+      background-color: var(--btn-secondary);
+      color: var(--text-primary);
+      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--transition-fast), transform 100ms ease;
+    }
+
+    .mod-btn:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .mod-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* Sidebar Copied Toast Banner */
+    .sidebar-toast-slot {
+      padding: 0 12px 12px 12px;
+      flex-shrink: 0;
+    }
+
+    .copied-toast {
+      width: 100%;
+      height: 68px;
+      border-radius: 34px;
+      background-color: var(--surface-player);
+      border: 1px solid var(--surface-card-border);
+      padding: 0 18px 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .copied-toast.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .copied-toast-text {
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-primary);
+    }
+
+    .sidebar-footer {
+      height: 98px;
+      border-top: 1px solid var(--border-subtle);
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+      flex-shrink: 0;
+    }
+
+    .lobby-code-btn {
+      flex: 1;
+      max-width: 350px;
+      height: 48px;
+      border-radius: 9999px;
+      background-color: var(--btn-primary);
+      color: var(--text-primary);
+      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--transition-fast), transform 100ms ease;
+    }
+
+    .lobby-code-btn:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .lobby-code-btn:active {
+      transform: scale(0.985);
+    }
+
+    .role-status-card {
+      flex: 1;
+      max-width: 350px;
+      height: 58px;
+      border-radius: 14px;
+      background-color: var(--surface-role-card);
+      padding: 6px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 15px;
+      line-height: 1.38;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: background-color var(--transition-fast);
+    }
+
+    .role-status-card:hover {
+      background-color: #363636;
+    }
+
+    .role-underline {
+      text-decoration: underline;
+    }
+
+    .self-footer-avatar {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .lobby-chat-area {
+      flex: 1;
+      background-color: var(--bg-canvas);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 26px 36px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .chat-messages::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+      background-color: #383838;
+      border-radius: 9999px;
+    }
+
+    .chat-system-notice {
+      text-align: center;
+      font-size: 16px;
+      color: var(--text-primary);
+    }
+
+    .chat-bubble-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+    }
+
+    .chat-bubble-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .chat-bubble {
+      min-height: 48px;
+      min-width: min(340px, 60vw);
+      max-width: 78%;
+      border-radius: 24px;
+      background-color: var(--chat-bubble-other);
+      padding: 14px 22px;
+      font-size: 14.5px;
+      line-height: 1.45;
+      color: var(--text-primary);
+      word-break: break-word;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .chat-bubble.is-self {
+      background-color: var(--chat-bubble-self);
+    }
+
+    .chat-bubble.is-multiline {
+      border-radius: 28px;
+      padding: 18px 24px;
+    }
+
+    .chat-input-wrapper {
+      padding: 0 30px 22px 30px;
+    }
+
+    .chat-input-bar {
+      width: 100%;
+      height: 56px;
+      border-radius: 9999px;
+      background-color: var(--chat-bar-bg);
+      padding: 0 11px 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chat-text-input {
+      flex: 1;
+      height: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-size: 15px;
+    }
+
+    .chat-text-input::placeholder {
+      color: #666666;
+    }
+
+    .chat-send-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background-color: var(--btn-primary);
+      color: var(--text-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background-color var(--transition-fast), transform 100ms ease;
+    }
+
+    .chat-send-btn:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .chat-send-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* =========================
+       5. VOTING & ELIMINATION SCREEN
+    ========================= */
+    .voting-screen {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .voting-topbar {
+      height: 58px;
+      background-color: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 14px 0 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 16px;
+      color: var(--text-primary);
+      flex-shrink: 0;
+    }
+
+    .voting-grid {
+      padding: 32px 36px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px 26px;
+    }
+
+    .vote-card {
+      height: 76px;
+      border-radius: 18px;
+      background-color: var(--surface-player);
+      padding: 0 20px 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      transition: background-color var(--transition-smooth);
+    }
+
+    .vote-card.is-eliminated {
+      background-color: var(--surface-player-eliminated);
+    }
+
+    .vote-card.is-eliminated .player-name {
+      color: var(--text-eliminated);
+    }
+
+    .vote-action-pill {
+      width: 96px;
+      height: 42px;
+      border-radius: 9999px;
+      background-color: var(--btn-secondary);
+      color: var(--text-primary);
+      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background-color var(--transition-fast), transform 100ms ease;
+    }
+
+    button.vote-action-pill:hover {
+      background-color: var(--btn-hover);
+    }
+
+    button.vote-action-pill:active {
+      transform: scale(0.97);
+    }
+
+    button.vote-action-pill.is-voted {
+      background-color: var(--btn-active);
+    }
+
+    .skip-vote-btn {
+      position: fixed;
+      bottom: 18px;
+      right: 20px;
+      width: 102px;
+      height: 42px;
+      border-radius: 9999px;
+      background-color: var(--btn-secondary);
+      color: var(--text-primary);
+      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--transition-fast), opacity var(--transition-fast), transform 100ms ease;
+    }
+
+    .skip-vote-btn:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .skip-vote-btn:active {
+      transform: scale(0.97);
+    }
+
+    .skip-vote-btn.is-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .elimination-banner {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 16px;
+      color: var(--text-primary);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-smooth);
+    }
+
+    .elimination-banner.is-visible {
+      opacity: 1;
+    }
+
+    /* =========================
+       6. END-OF-GAME REVEAL & OUTCOME SCREEN
+    ========================= */
+    .reveal-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .reveal-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: translateY(-16px);
+    }
+
+    .reveal-heading {
+      font-size: clamp(44px, 3.8vw, 72px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-title);
+      margin-bottom: clamp(48px, 6.2vw, 118px);
+      text-align: center;
+    }
+
+    .reveal-card {
+      width: clamp(240px, 17.5vw, 336px);
+      height: clamp(290px, 21vw, 405px);
+      border-radius: 26px;
+      background-color: var(--surface-card);
+      padding-top: clamp(24px, 1.8vw, 34px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform var(--transition-smooth);
+    }
+
+    .reveal-screen:hover .reveal-card {
+      transform: translateY(-3px);
+    }
+
+    .reveal-avatar {
+      width: clamp(120px, 9vw, 174px);
+      height: clamp(120px, 9vw, 174px);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .reveal-name {
+      margin-top: clamp(26px, 2.2vw, 42px);
+      font-size: clamp(20px, 1.5vw, 28px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    @media (max-width: 960px) {
+      .lobby-topbar-left,
+      .lobby-sidebar {
+        width: 320px;
+      }
+
+      .lobby-topbar-left {
+        padding: 0 20px;
+      }
+
+      .player-list {
+        padding: 20px 16px 16px 20px;
+      }
+
+      .mod-btn {
+        width: 68px;
+        height: 36px;
+        font-size: 14px;
+      }
+
+      .sidebar-footer {
+        padding: 0 20px;
+        gap: 16px;
+      }
+
+      .voting-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =========================
+       SCREEN 1: HOME
+  ========================= -->
+  <main id="screen-home" class="screen home-screen is-active">
+    <div class="home-center">
+      <h1 class="home-title">MIMIC</h1>
+      <nav class="home-menu" aria-label="Main menu">
+        <button type="button" class="pill-btn" data-nav="join">Join Lobby</button>
+        <button type="button" class="pill-btn" data-nav="create">Create Lobby</button>
+        <button type="button" class="pill-btn" data-open-modal="settings">Settings</button>
+      </nav>
+    </div>
+
+    <footer class="home-footer">
+      <div class="footer-group">
+        <button type="button" class="footer-link" data-open-modal="about">about</button>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="footer-link">github</a>
+      </div>
+      <div class="footer-group">
+        <button type="button" class="footer-link" data-open-modal="credits">credits</button>
+        <button type="button" class="footer-link" data-open-modal="versions">versions</button>
+      </div>
+    </footer>
+  </main>
+
+  <!-- =========================
+       SCREEN 2: JOIN LOBBY
+  ========================= -->
+  <section id="screen-join" class="screen sub-screen" aria-label="Join Lobby">
+    <button type="button" class="back-btn" data-nav="home">Back</button>
+    <h2 class="sub-title">Join Lobby</h2>
+
+    <form id="join-code-form" class="join-code-row">
+      <input
+        type="text"
+        id="join-code-input"
+        class="dark-input join-code-input"
+        placeholder="Enter a code..."
+        autocomplete="off"
+      />
+      <button type="submit" class="rect-action-btn join-code-btn">Join</button>
+    </form>
+
+    <div class="or-divider">
+      <span class="or-line"></span>
+      <span>or</span>
+      <span class="or-line"></span>
+    </div>
+
+    <div class="panel-card">
+      <div class="card-header">
+        <h3 class="card-title">Find a lobby</h3>
+        <button type="button" id="refresh-lobbies-btn" class="circle-icon-btn refresh-btn" aria-label="Refresh lobbies">
+          <svg class="refresh-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 0 0-15.36-6.36L3 8" />
+            <path d="M3 3v5h5" />
+            <path d="M3 12a9 9 0 0 0 15.36 6.36L21 16" />
+            <path d="M16 16h5v5" />
+          </svg>
+        </button>
+      </div>
+      <div id="public-lobby-list" class="lobby-list-scroll">
+        <div class="lobby-list-row">
+          <div class="lobby-name-pill">&lt;Name of a lobby&gt;</div>
+          <button type="button" class="lobby-row-join-btn" data-join-lobby="<Lobby name>">Join</button>
+        </div>
+        <div class="lobby-list-row">
+          <div class="lobby-name-pill">&lt;Name of a lobby 2&gt;</div>
+          <button type="button" class="lobby-row-join-btn" data-join-lobby="<Lobby name>">Join</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================
+       SCREEN 3: CREATE LOBBY
+  ========================= -->
+  <section id="screen-create" class="screen sub-screen" aria-label="Create Lobby">
+    <button type="button" class="back-btn" data-nav="home">Back</button>
+    <h2 class="sub-title">Create Lobby</h2>
+
+    <input
+      type="text"
+      id="create-lobby-name-input"
+      class="dark-input create-name-input"
+      placeholder="Enter lobby name..."
+      autocomplete="off"
+    />
+
+    <div class="panel-card">
+      <div class="card-header">
+        <h3 class="card-title">Game settings</h3>
+        <button type="button" id="reset-settings-btn" class="default-pill-btn">Default</button>
+      </div>
+      <div class="settings-card-body">
+        <div>
+          <div class="setting-block-title">Round duration (minutes)</div>
+          <div id="duration-options" class="duration-grid" role="radiogroup" aria-label="Round duration in minutes">
+            <button type="button" class="duration-btn" data-duration="1">1</button>
+            <button type="button" class="duration-btn" data-duration="2">2</button>
+            <button type="button" class="duration-btn" data-duration="3">3</button>
+            <button type="button" class="duration-btn" data-duration="4">4</button>
+            <button type="button" class="duration-btn is-selected" data-duration="5">5</button>
+            <button type="button" class="duration-btn" data-duration="6">6</button>
+            <button type="button" class="duration-btn" data-duration="7">7</button>
+            <button type="button" class="duration-btn" data-duration="8">8</button>
+            <button type="button" class="duration-btn" data-duration="9">9</button>
+            <button type="button" class="duration-btn" data-duration="10">10</button>
+          </div>
+
+          <div class="setting-block-title">Change Mimic target</div>
+          <div id="mimic-target-options" class="toggle-row" role="radiogroup" aria-label="Change Mimic target">
+            <button type="button" class="toggle-pill-btn" data-mimic-target="ON">ON</button>
+            <button type="button" class="toggle-pill-btn is-selected" data-mimic-target="OFF">OFF</button>
+          </div>
+
+          <div class="toggle-help-list">
+            <div class="toggle-help-row">
+              <span class="toggle-help-tag">ON</span>
+              <span>New target each round</span>
+            </div>
+            <div class="toggle-help-row">
+              <span class="toggle-help-tag">OFF</span>
+              <span>Keep the previous target if it's still valid</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="card-bottom-note">You will not be able to change the settings after creating a lobby.</p>
+      </div>
+    </div>
+
+    <button type="button" id="create-lobby-submit-btn" class="rect-action-btn create-submit-btn">Create</button>
+  </section>
+
+  <!-- =========================
+       SCREEN 4: LOBBY & IN-GAME ROOM
+  ========================= -->
+  <section id="screen-lobby" class="screen lobby-screen" aria-label="Lobby and Game Room">
+    <header class="lobby-topbar">
+      <div class="lobby-topbar-left">
+        <span>List of players</span>
+        <span id="lobby-player-count" class="topbar-interactive-label" title="Start round">&lt;Number of players&gt; players</span>
+      </div>
+      <div class="lobby-topbar-right">
+        <span id="lobby-room-title" class="topbar-interactive-label">&lt;Lobby name&gt;</span>
+        <button type="button" id="leave-lobby-btn" class="leave-btn">Leave</button>
+      </div>
+    </header>
+
+    <div class="lobby-workspace">
+      <aside class="lobby-sidebar">
+        <div id="lobby-player-list" class="player-list"></div>
+
+        <div id="sidebar-toast-slot" class="sidebar-toast-slot">
+          <div id="copied-toast" class="copied-toast" role="status" aria-live="polite">
+            <span class="copied-toast-text">The code has been copied!</span>
+            <button type="button" id="close-copied-toast-btn" class="circle-icon-btn" aria-label="Dismiss notification">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <line x1="6" y1="6" x2="18" y2="18" />
+                <line x1="18" y1="6" x2="6" y2="18" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          <button type="button" id="copy-lobby-code-btn" class="lobby-code-btn">&lt;Lobby code&gt;</button>
+          <div id="role-status-card" class="role-status-card" style="display: none;" title="Switch Mimic / Find mimic view"></div>
+          <div id="sidebar-self-avatar" class="self-footer-avatar"></div>
+        </div>
+      </aside>
+
+      <div class="lobby-chat-area">
+        <div id="lobby-chat-messages" class="chat-messages"></div>
+
+        <form id="lobby-chat-form" class="chat-input-wrapper">
+          <div class="chat-input-bar">
+            <input
+              type="text"
+              id="lobby-chat-input"
+              class="chat-text-input"
+              placeholder="Write a message..."
+              autocomplete="off"
+            />
+            <button type="submit" class="chat-send-btn" aria-label="Send message">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="13 6 19 12 13 18" />
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================
+       SCREEN 5: VOTING & ELIMINATION
+  ========================= -->
+  <section id="screen-voting" class="screen voting-screen" aria-label="Voting">
+    <header class="voting-topbar">
+      <span id="voting-timer-label">&lt;Voting timer&gt;</span>
+      <button type="button" id="voting-leave-btn" class="leave-btn">Leave</button>
+    </header>
+
+    <div id="voting-grid" class="voting-grid"></div>
+
+    <button type="button" id="skip-vote-btn" class="skip-vote-btn">Skip</button>
+    <div id="elimination-banner" class="elimination-banner">&lt;Player 3&gt; was eliminated</div>
+  </section>
+
+  <!-- =========================
+       SCREEN 6: END-OF-GAME REVEAL & RESULT
+  ========================= -->
+  <section id="screen-reveal" class="screen reveal-screen" aria-label="Match Result">
+    <div class="reveal-center">
+      <h2 id="reveal-heading" class="reveal-heading">The mimic was...</h2>
+      <div class="reveal-card">
+        <div id="reveal-avatar" class="reveal-avatar" style="background-color: var(--avatar-blue);"></div>
+        <div id="reveal-name" class="reveal-name">&lt;Player 4&gt;</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================
+       MODAL: SETTINGS
+  ========================= -->
+  <div id="modal-settings" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+    <div class="modal-card">
+      <div class="card-header">
+        <h3 id="settings-modal-title" class="card-title">Settings</h3>
+        <button type="button" class="circle-icon-btn" data-close-modal aria-label="Close Settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="18" y1="6" x2="6" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-list">
+          <div class="setting-row">
+            <span class="setting-label">Theme</span>
+            <div class="dropdown-wrapper" data-dropdown="theme">
+              <button type="button" class="dropdown-trigger" id="theme-trigger">System</button>
+              <div class="dropdown-menu" id="theme-menu" role="listbox">
+                <button type="button" class="dropdown-option is-selected" data-value="System">System</button>
+                <button type="button" class="dropdown-option" data-value="Dark">Dark</button>
+                <button type="button" class="dropdown-option" data-value="Light">Light</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <span class="setting-label">Language</span>
+            <div class="dropdown-wrapper" data-dropdown="language">
+              <button type="button" class="dropdown-trigger" id="language-trigger">English (US)</button>
+              <div class="dropdown-menu" id="language-menu" role="listbox">
+                <button type="button" class="dropdown-option is-selected" data-value="English (US)">English (US)</button>
+                <button type="button" class="dropdown-option" data-value="English (UK)">English (UK)</button>
+                <button type="button" class="dropdown-option" data-value="Русский">Русский</button>
+                <button type="button" class="dropdown-option" data-value="Українська">Українська</button>
+                <button type="button" class="dropdown-option" data-value="Español">Español</button>
+                <button type="button" class="dropdown-option" data-value="Deutsch">Deutsch</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================
+       MODAL: ABOUT
+  ========================= -->
+  <div id="modal-about" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="about-modal-title">
+    <div class="modal-card">
+      <div class="card-header">
+        <h3 id="about-modal-title" class="card-title">About</h3>
+        <button type="button" class="circle-icon-btn" data-close-modal aria-label="Close About">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="18" y1="6" x2="6" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="about-paragraph">
+          <strong>Mimic</strong> is a multiplayer social deduction game where one player secretly imitates another player's writing style.
+        </p>
+        <p class="about-paragraph">
+          Chat with friends, pay attention to the details, and try to figure out who's the Mimic. Can you spot the difference?
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================
+       MODAL: CREDITS
+  ========================= -->
+  <div id="modal-credits" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="credits-modal-title">
+    <div class="modal-card">
+      <div class="card-header">
+        <h3 id="credits-modal-title" class="card-title">Credits</h3>
+        <button type="button" class="circle-icon-btn" data-close-modal aria-label="Close Credits">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="18" y1="6" x2="6" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>&lt;Credits&gt;</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================
+       MODAL: VERSIONS
+  ========================= -->
+  <div id="modal-versions" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="versions-modal-title">
+    <div class="modal-card">
+      <div class="card-header">
+        <h3 id="versions-modal-title" class="card-title">Versions</h3>
+        <button type="button" class="circle-icon-btn" data-close-modal aria-label="Close Versions">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="18" y1="6" x2="6" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>&lt;Versions&gt;</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const state = {
+        roundDuration: 5,
+        mimicTargetMode: "OFF",
+        phase: "lobby", // "lobby" | "game"
+        roundNumber: 1,
+        isHost: true,
+        isMimic: true,
+        mimicTargetName: "<Player 3>",
+        lobbyName: "<Lobby name>",
+        lobbyCode: "<Lobby code>",
+        selfColor: "var(--avatar-red)",
+        players: [],
+        votingStep: "vote", // "vote" | "results" | "eliminated"
+        votedPlayerId: null,
+        revealStage: 0, // 0: "The mimic was...", 1: "You won!" / "You lost!"
+        didWin: true,
+      };
+
+      const timers = [];
+      function queueTimer(fn, ms) {
+        const id = setTimeout(fn, ms);
+        timers.push(id);
+        return id;
+      }
+      function clearAllTimers() {
+        while (timers.length) {
+          clearTimeout(timers.pop());
+        }
+      }
+
+      const screens = {
+        home: document.getElementById("screen-home"),
+        join: document.getElementById("screen-join"),
+        create: document.getElementById("screen-create"),
+        lobby: document.getElementById("screen-lobby"),
+        voting: document.getElementById("screen-voting"),
+        reveal: document.getElementById("screen-reveal"),
+      };
+
+      const modals = {
+        settings: document.getElementById("modal-settings"),
+        about: document.getElementById("modal-about"),
+        credits: document.getElementById("modal-credits"),
+        versions: document.getElementById("modal-versions"),
+      };
+
+      function showScreen(screenKey) {
+        Object.entries(screens).forEach(([key, el]) => {
+          el.classList.toggle("is-active", key === screenKey);
+        });
+      }
+
+      function openModal(modalKey) {
+        closeAllDropdowns();
+        Object.entries(modals).forEach(([key, el]) => {
+          el.classList.toggle("is-open", key === modalKey);
+        });
+      }
+
+      function closeAllModals() {
+        closeAllDropdowns();
+        Object.values(modals).forEach((el) => el.classList.remove("is-open"));
+      }
+
+      function closeAllDropdowns() {
+        document.querySelectorAll(".dropdown-menu.is-open").forEach((menu) => {
+          menu.classList.remove("is-open");
+        });
+      }
+
+      // Navigation buttons
+      document.querySelectorAll("[data-nav]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          clearAllTimers();
+          showScreen(btn.dataset.nav);
+        });
+      });
+
+      // Modal open/close triggers
+      document.querySelectorAll("[data-open-modal]").forEach((btn) => {
+        btn.addEventListener("click", () => openModal(btn.dataset.openModal));
+      });
+
+      document.querySelectorAll("[data-close-modal]").forEach((btn) => {
+        btn.addEventListener("click", closeAllModals);
+      });
+
+      Object.values(modals).forEach((backdrop) => {
+        backdrop.addEventListener("click", (e) => {
+          if (e.target === backdrop) closeAllModals();
+        });
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          const openDropdown = document.querySelector(".dropdown-menu.is-open");
+          if (openDropdown) {
+            closeAllDropdowns();
+          } else {
+            closeAllModals();
+          }
+        }
+      });
+
+      // Custom Settings Dropdowns
+      document.querySelectorAll(".dropdown-wrapper").forEach((wrapper) => {
+        const trigger = wrapper.querySelector(".dropdown-trigger");
+        const menu = wrapper.querySelector(".dropdown-menu");
+        const options = menu.querySelectorAll(".dropdown-option");
+
+        trigger.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const wasOpen = menu.classList.contains("is-open");
+          closeAllDropdowns();
+          if (!wasOpen) menu.classList.add("is-open");
+        });
+
+        options.forEach((opt) => {
+          opt.addEventListener("click", (e) => {
+            e.stopPropagation();
+            options.forEach((o) => o.classList.remove("is-selected"));
+            opt.classList.add("is-selected");
+            trigger.textContent = opt.dataset.value;
+            closeAllDropdowns();
+          });
+        });
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".dropdown-wrapper")) closeAllDropdowns();
+      });
+
+      // Join Lobby Screen Interactions
+      const refreshBtn = document.getElementById("refresh-lobbies-btn");
+      refreshBtn.addEventListener("click", () => {
+        refreshBtn.classList.remove("is-spinning");
+        void refreshBtn.offsetWidth;
+        refreshBtn.classList.add("is-spinning");
+      });
+
+      document.getElementById("join-code-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const rawCode = document.getElementById("join-code-input").value.trim();
+        enterLobby({
+          isHost: false,
+          lobbyName: "<Lobby name>",
+          lobbyCode: rawCode || "<Lobby code>",
+        });
+      });
+
+      document.querySelectorAll("[data-join-lobby]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          enterLobby({
+            isHost: false,
+            lobbyName: btn.dataset.joinLobby,
+            lobbyCode: "<Lobby code>",
+          });
+        });
+      });
+
+      // Create Lobby Screen Interactions
+      const durationButtons = document.querySelectorAll("#duration-options .duration-btn");
+      const mimicTargetButtons = document.querySelectorAll("#mimic-target-options .toggle-pill-btn");
+
+      function updateDurationSelection(minutes) {
+        state.roundDuration = minutes;
+        durationButtons.forEach((btn) => {
+          btn.classList.toggle("is-selected", Number(btn.dataset.duration) === minutes);
+        });
+      }
+
+      function updateMimicTargetSelection(mode) {
+        state.mimicTargetMode = mode;
+        mimicTargetButtons.forEach((btn) => {
+          btn.classList.toggle("is-selected", btn.dataset.mimicTarget === mode);
+        });
+      }
+
+      durationButtons.forEach((btn) => {
+        btn.addEventListener("click", () => updateDurationSelection(Number(btn.dataset.duration)));
+      });
+
+      mimicTargetButtons.forEach((btn) => {
+        btn.addEventListener("click", () => updateMimicTargetSelection(btn.dataset.mimicTarget));
+      });
+
+      document.getElementById("reset-settings-btn").addEventListener("click", () => {
+        updateDurationSelection(5);
+        updateMimicTargetSelection("OFF");
+      });
+
+      document.getElementById("create-lobby-submit-btn").addEventListener("click", () => {
+        const rawName = document.getElementById("create-lobby-name-input").value.trim();
+        enterLobby({
+          isHost: true,
+          lobbyName: rawName || "<Lobby name>",
+          lobbyCode: "<Lobby code>",
+        });
+      });
+
+      // Lobby & Game Workspace Elements
+      const playerListEl = document.getElementById("lobby-player-list");
+      const playerCountEl = document.getElementById("lobby-player-count");
+      const lobbyTitleEl = document.getElementById("lobby-room-title");
+      const copyCodeBtn = document.getElementById("copy-lobby-code-btn");
+      const roleStatusCard = document.getElementById("role-status-card");
+      const selfAvatarEl = document.getElementById("sidebar-self-avatar");
+      const chatMessagesEl = document.getElementById("lobby-chat-messages");
+      const chatInputEl = document.getElementById("lobby-chat-input");
+      const copiedToastEl = document.getElementById("copied-toast");
+      const toastSlotEl = document.getElementById("sidebar-toast-slot");
+
+      function showCopiedToast() {
+        copiedToastEl.classList.add("is-visible");
+      }
+
+      function hideCopiedToast() {
+        copiedToastEl.classList.remove("is-visible");
+      }
+
+      document.getElementById("close-copied-toast-btn").addEventListener("click", hideCopiedToast);
+
+      copyCodeBtn.addEventListener("click", () => {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(state.lobbyCode).catch(() => {});
+        }
+        showCopiedToast();
+      });
+
+      function appendSystemNotice(text) {
+        const notice = document.createElement("div");
+        notice.className = "chat-system-notice";
+        notice.textContent = text;
+        chatMessagesEl.appendChild(notice);
+        chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+      }
+
+      function appendChatBubble({ avatarColor, text, isSelf = false, isMultiline = false }) {
+        const row = document.createElement("div");
+        row.className = "chat-bubble-row";
+
+        const avatar = document.createElement("div");
+        avatar.className = "chat-bubble-avatar";
+        avatar.style.backgroundColor = avatarColor;
+
+        const bubble = document.createElement("div");
+        bubble.className = "chat-bubble";
+        if (isSelf) bubble.classList.add("is-self");
+        if (isMultiline || text.length > 72) bubble.classList.add("is-multiline");
+        bubble.textContent = text;
+
+        row.appendChild(avatar);
+        row.appendChild(bubble);
+        chatMessagesEl.appendChild(row);
+        chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+      }
+
+      function enterLobby({ isHost, lobbyName, lobbyCode }) {
+        clearAllTimers();
+        state.phase = "lobby";
+        state.roundNumber = 1;
+        state.isHost = isHost;
+        state.lobbyName = lobbyName;
+        state.lobbyCode = lobbyCode;
+        hideCopiedToast();
+
+        toastSlotEl.style.display = "block";
+        copyCodeBtn.style.display = "inline-flex";
+        roleStatusCard.style.display = "none";
+        playerCountEl.style.display = "inline";
+        playerCountEl.textContent = "<Number of players> players";
+        lobbyTitleEl.textContent = state.lobbyName;
+        copyCodeBtn.textContent = state.lobbyCode;
+        chatMessagesEl.innerHTML = "";
+        chatInputEl.value = "";
+
+        if (isHost) {
+          state.selfColor = "var(--avatar-red)";
+          state.players = [
+            { id: "p1", name: "<You> (host)", color: "var(--avatar-red)", canModerate: false, eliminated: false, isSelf: true },
+            { id: "p2", name: "<Player 2>", color: "var(--avatar-cyan)", canModerate: true, eliminated: false },
+            { id: "p3", name: "<Player 3>", color: "var(--avatar-green)", canModerate: true, eliminated: false },
+          ];
+        } else {
+          state.selfColor = "var(--avatar-cyan)";
+          state.players = [
+            { id: "p1", name: "<Player 1> (host)", color: "var(--avatar-red)", canModerate: false, eliminated: false },
+            { id: "p2", name: "<You>", color: "var(--avatar-cyan)", canModerate: false, eliminated: false, isSelf: true },
+            { id: "p3", name: "<Player 3>", color: "var(--avatar-green)", canModerate: false, eliminated: false },
+          ];
+          appendSystemNotice("<Player 3> joined the game");
+        }
+
+        selfAvatarEl.style.backgroundColor = state.selfColor;
+        renderPlayers();
+        showScreen("lobby");
+      }
+
+      function renderPlayers() {
+        playerListEl.innerHTML = "";
+
+        state.players.forEach((player) => {
+          const card = document.createElement("div");
+          card.className = "player-card";
+          if (player.eliminated) card.classList.add("is-eliminated");
+
+          const info = document.createElement("div");
+          info.className = "player-info";
+
+          const avatar = document.createElement("div");
+          avatar.className = "player-avatar";
+          avatar.style.backgroundColor = player.color;
+
+          const name = document.createElement("span");
+          name.className = "player-name";
+          name.textContent = player.name;
+
+          info.appendChild(avatar);
+          info.appendChild(name);
+          card.appendChild(info);
+
+          if (state.phase === "lobby" && state.isHost && player.canModerate) {
+            const actions = document.createElement("div");
+            actions.className = "host-actions";
+
+            const kickBtn = document.createElement("button");
+            kickBtn.type = "button";
+            kickBtn.className = "mod-btn";
+            kickBtn.textContent = "Kick";
+            kickBtn.addEventListener("click", () => removeLobbyPlayer(player.id, player.name, "kicked"));
+
+            const banBtn = document.createElement("button");
+            banBtn.type = "button";
+            banBtn.className = "mod-btn";
+            banBtn.textContent = "Ban";
+            banBtn.addEventListener("click", () => removeLobbyPlayer(player.id, player.name, "banned"));
+
+            actions.appendChild(kickBtn);
+            actions.appendChild(banBtn);
+            card.appendChild(actions);
+          }
+
+          playerListEl.appendChild(card);
+        });
+      }
+
+      function removeLobbyPlayer(playerId, playerName, actionVerb) {
+        state.players = state.players.filter((p) => p.id !== playerId);
+        renderPlayers();
+        appendSystemNotice(`${playerName} has been ${actionVerb}`);
+      }
+
+      function applyRoleRoster() {
+        if (state.isMimic) {
+          state.selfColor = "var(--avatar-black)";
+          state.players = [
+            { id: "g1", name: "<You>", color: "var(--avatar-black)", eliminated: false, isSelf: true },
+            { id: "g2", name: "<Player 2>", color: "var(--avatar-red)", eliminated: false },
+            { id: "g3", name: "<Player 3>", color: "var(--avatar-green)", eliminated: state.roundNumber > 1 },
+            { id: "g4", name: "<Player 4>", color: "var(--avatar-blue)", eliminated: false },
+          ];
+          roleStatusCard.innerHTML = `
+            <div>You are <span class="role-underline">mimic</span></div>
+            <div>Your target is <span class="role-underline">${state.mimicTargetName}</span></div>
+          `;
+        } else {
+          state.selfColor = "var(--avatar-red)";
+          state.players = [
+            { id: "f1", name: "<Player 1>", color: "var(--avatar-black)", eliminated: false },
+            { id: "f2", name: "<You>", color: "var(--avatar-red)", eliminated: false, isSelf: true },
+            { id: "f3", name: "<Player 3>", color: "var(--avatar-green)", eliminated: false },
+            { id: "f4", name: "<Player 4>", color: "var(--avatar-blue)", eliminated: false },
+            { id: "f5", name: "<Player 5>", color: "var(--avatar-lavender)", eliminated: false },
+            { id: "f6", name: "<Player 6>", color: "var(--avatar-orange)", eliminated: false },
+            { id: "f7", name: "<Player 7>", color: "var(--avatar-skyblue)", eliminated: false },
+            { id: "f8", name: "<Player 8>", color: "var(--avatar-lime)", eliminated: false },
+            { id: "f9", name: "<Player 9>", color: "var(--avatar-white)", eliminated: false },
+          ];
+          roleStatusCard.innerHTML = `<div>Find mimic</div>`;
+        }
+        selfAvatarEl.style.backgroundColor = state.selfColor;
+        renderPlayers();
+      }
+
+      function startGameRound(roundNum) {
+        clearAllTimers();
+        state.phase = "game";
+        state.roundNumber = roundNum;
+        hideCopiedToast();
+
+        toastSlotEl.style.display = "none";
+        copyCodeBtn.style.display = "none";
+        roleStatusCard.style.display = "flex";
+        playerCountEl.style.display = "none";
+        lobbyTitleEl.textContent = "<Timer>";
+
+        if (roundNum === 1) {
+          state.isMimic = true;
+          state.mimicTargetName = "<Player 3>";
+          chatMessagesEl.innerHTML = "";
+        } else {
+          state.isMimic = true;
+          state.mimicTargetName = "<Player 4>";
+        }
+
+        applyRoleRoster();
+        showScreen("lobby");
+      }
+
+      roleStatusCard.addEventListener("click", () => {
+        if (state.phase !== "game") return;
+        state.isMimic = !state.isMimic;
+        applyRoleRoster();
+      });
+
+      // Top-bar labels advance states naturally:
+      // In lobby -> starts Round 1; in game -> opens Voting screen.
+      playerCountEl.addEventListener("click", () => {
+        if (state.phase === "lobby") startGameRound(1);
+      });
+
+      lobbyTitleEl.addEventListener("click", () => {
+        if (state.phase === "lobby") {
+          startGameRound(1);
+        } else if (state.phase === "game") {
+          openVotingScreen();
+        }
+      });
+
+      // Chat Form Submission
+      document.getElementById("lobby-chat-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const text = chatInputEl.value.trim();
+
+        if (!text) {
+          if (state.phase === "lobby") {
+            startGameRound(1);
+          } else if (state.phase === "game") {
+            openVotingScreen();
+          }
+          return;
+        }
+
+        if (text.toLowerCase() === "/start" && state.phase === "lobby") {
+          chatInputEl.value = "";
+          startGameRound(1);
+          return;
+        }
+
+        if (text.toLowerCase() === "/vote" && state.phase === "game") {
+          chatInputEl.value = "";
+          openVotingScreen();
+          return;
+        }
+
+        appendChatBubble({
+          avatarColor: state.selfColor,
+          text,
+          isSelf: true,
+        });
+        chatInputEl.value = "";
+
+        if (state.phase === "game") {
+          queueTimer(() => {
+            const replies = [
+              { color: "var(--avatar-red)", text: "Hmm, that sounds suspicious..." },
+              { color: "var(--avatar-green)", text: "Wait a second, let's see how everyone types." },
+              { color: "var(--avatar-blue)", text: "I think we should vote soon!" },
+            ];
+            const pick = replies[Math.floor(Math.random() * replies.length)];
+            appendChatBubble({ avatarColor: pick.color, text: pick.text, isSelf: false });
+          }, 550);
+        }
+      });
+
+      // Voting Screen Logic
+      const votingTimerEl = document.getElementById("voting-timer-label");
+      const votingGridEl = document.getElementById("voting-grid");
+      const skipVoteBtn = document.getElementById("skip-vote-btn");
+      const eliminationBannerEl = document.getElementById("elimination-banner");
+
+      function getVotingRoster() {
+        return [
+          { id: "v1", name: "<Player 1>", color: "var(--avatar-black)" },
+          { id: "v2", name: "<Player 2>", color: "var(--avatar-red)" },
+          { id: "v3", name: "<Player 3>", color: "var(--avatar-green)" },
+          { id: "v4", name: "<You>", color: "var(--avatar-blue)" },
+        ];
+      }
+
+      function openVotingScreen() {
+        clearAllTimers();
+        state.votingStep = "vote";
+        state.votedPlayerId = null;
+
+        votingTimerEl.textContent = "<Voting timer>";
+        skipVoteBtn.classList.remove("is-hidden");
+        eliminationBannerEl.classList.remove("is-visible");
+
+        renderVotingCards();
+        showScreen("voting");
+      }
+
+      function renderVotingCards() {
+        votingGridEl.innerHTML = "";
+        const roster = getVotingRoster();
+
+        roster.forEach((p) => {
+          const card = document.createElement("div");
+          card.className = "vote-card";
+          if (state.votingStep === "eliminated" && p.id === "v3") {
+            card.classList.add("is-eliminated");
+          }
+
+          const info = document.createElement("div");
+          info.className = "player-info";
+
+          const avatar = document.createElement("div");
+          avatar.className = "player-avatar";
+          avatar.style.backgroundColor = p.color;
+
+          const name = document.createElement("span");
+          name.className = "player-name";
+          name.textContent = p.name;
+
+          info.appendChild(avatar);
+          info.appendChild(name);
+          card.appendChild(info);
+
+          if (state.votingStep === "vote") {
+            const voteBtn = document.createElement("button");
+            voteBtn.type = "button";
+            voteBtn.className = "vote-action-pill";
+            if (state.votedPlayerId === p.id) voteBtn.classList.add("is-voted");
+            voteBtn.textContent = "Vote";
+            voteBtn.addEventListener("click", () => handleCastVote(p.id));
+            card.appendChild(voteBtn);
+          } else {
+            const countBadge = document.createElement("div");
+            countBadge.className = "vote-action-pill";
+            const counts = { v1: "1", v2: "1", v3: "2", v4: "0" };
+            countBadge.textContent = counts[p.id];
+            card.appendChild(countBadge);
+          }
+
+          votingGridEl.appendChild(card);
+        });
+      }
+
+      function handleCastVote(playerId) {
+        if (state.votingStep !== "vote") return;
+        state.votedPlayerId = playerId;
+        state.didWin = playerId === "v4" || playerId === "v3";
+        renderVotingCards();
+
+        // Transition to 0:00 vote tally
+        queueTimer(() => {
+          state.votingStep = "results";
+          votingTimerEl.textContent = "0:00";
+          skipVoteBtn.classList.add("is-hidden");
+          renderVotingCards();
+
+          // Transition to elimination highlight
+          queueTimer(() => {
+            state.votingStep = "eliminated";
+            renderVotingCards();
+            eliminationBannerEl.textContent = "<Player 3> was eliminated";
+            eliminationBannerEl.classList.add("is-visible");
+
+            // After Round 1 -> Round 2; after Round 2 -> End Reveal
+            queueTimer(() => {
+              if (state.roundNumber === 1) {
+                startGameRound(2);
+              } else {
+                openRevealSequence();
+              }
+            }, 1800);
+          }, 1200);
+        }, 450);
+      }
+
+      skipVoteBtn.addEventListener("click", () => {
+        handleCastVote(null);
+      });
+
+      // End-of-Game Reveal & Outcome Sequence
+      const revealHeadingEl = document.getElementById("reveal-heading");
+      const revealAvatarEl = document.getElementById("reveal-avatar");
+      const revealNameEl = document.getElementById("reveal-name");
+
+      function openRevealSequence() {
+        clearAllTimers();
+        state.revealStage = 0;
+        revealHeadingEl.textContent = "The mimic was...";
+        revealAvatarEl.style.backgroundColor = "var(--avatar-blue)";
+        revealNameEl.textContent = "<Player 4>";
+        showScreen("reveal");
+
+        queueTimer(() => {
+          advanceRevealStage();
+        }, 1800);
+      }
+
+      function advanceRevealStage() {
+        if (state.revealStage === 0) {
+          state.revealStage = 1;
+          revealHeadingEl.textContent = state.didWin ? "You won!" : "You lost!";
+        } else {
+          enterLobby({
+            isHost: state.isHost,
+            lobbyName: state.lobbyName,
+            lobbyCode: state.lobbyCode,
+          });
+        }
+      }
+
+      screens.reveal.addEventListener("click", () => {
+        clearAllTimers();
+        advanceRevealStage();
+      });
+
+      // Leave buttons
+      function leaveToHome() {
+        clearAllTimers();
+        showScreen("home");
+      }
+
+      document.getElementById("leave-lobby-btn").addEventListener("click", leaveToHome);
+      document.getElementById("voting-leave-btn").addEventListener("click", leaveToHome);
+    })();
+  </script>
+</body>
+</html>

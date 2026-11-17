@@ -1,0 +1,154 @@
+{
+  "home": {
+    "title": "MIMIC",
+    "menu": {
+      "joinLobby": "Zum Lobby beitreten",
+      "createLobby": "Lobby erstellen",
+      "settings": "Einstellungen"
+    },
+    "footer": {
+      "about": "über",
+      "github": "github",
+      "credits": "danksagungen",
+      "versions": "versionen"
+    },
+    "modals": {
+      "settings": {
+        "title": "Einstellungen",
+        "theme": {
+          "label": "Design",
+          "system": "System",
+          "dark": "Dunkel",
+          "light": "Hell"
+        },
+        "language": {
+          "label": "Sprache",
+          "options": {
+            "englishUs": "English (US)",
+            "englishUk": "English (UK)",
+            "russian": "Русский",
+            "ukrainian": "Українська",
+            "spanish": "Español",
+            "german": "Deutsch"
+          },
+          "apply": "Anwenden"
+        }
+      },
+      "about": {
+        "title": "Über MIMIC",
+        "text": "MIMIC ist ein soziales Deduktion-Chatspiel für 3–15 Spieler über eine LAN. Jeder erhält eine zufällige Tieridentität. Ein Spieler wird heimlich zum Mimik und muss einen Zielspieler stilistisch — in Tonfall und Gewohnheiten — unauffällig imitieren, während die anderen den Hochstapler aufdecken versuchen.\n\nRegeln:\n• Unterhaltet euch im Chat jeder Runde, und stimmt ab, wenn der Timer abläuft.\n• Ausgeschiedene Spieler werden Zuschauer (sie können keinen Chat schreiben und keine Stimme abgeben), und ihre wahre Rolle wird erst am Ende der Partie offenbart.\n• Überspringen überspringt die Ausscheidung; wenn alle aktiven Spieler Überspringen drücken, ist das Spiel sofort beendet.\n• Friedliche Spieler gewinnen nur, wenn der Mimik ausgeschieden ist und das zulässige Fehlerlimit nicht überschritten wird (1 Fehler auf jeweils 3 Startspieler). Andernfalls gewinnt der Mimik."
+      },
+      "credits": {
+        "title": "Danksagungen",
+        "text": "Erstellt von DeNdyJr.\nMit React, TypeScript, Express und Socket.IO entwickelt.\nQuellcode: github.com/DeNdyJr-web/mimic"
+      },
+      "versions": {
+        "title": "Versionen",
+        "current": {
+          "version": "1.0.0",
+          "releaseDate": "2026-11-16",
+          "notes": "v1.0.0 — Erster Release: Multiplayer-Lobbys über LAN, geheime Mimik- und Zielzuweisung, blindes Abstimmen pro Runde, Zuschauermodus, dunkle/helle Themen und 6 Sprachen."
+        }
+      }
+    }
+  },
+  "join": {
+    "back": "Zurück",
+    "title": "Zum Lobby beitreten",
+    "codePlaceholder": "Code eingeben...",
+    "joinButton": "Beitreten",
+    "or": "oder",
+    "findLobby": "Lobby finden",
+    "refresh": "Räume aktualisieren",
+    "loading": "Aktive Lobbies werden gesucht…",
+    "empty": "Derzeit gibt es keine aktiven Lobbies auf diesem Host.",
+    "noCodeError": "Gib einen Code ein, um beizutreten."
+  },
+  "create": {
+    "back": "Zurück",
+    "title": "Lobby erstellen",
+    "namePlaceholder": "Namens des Lobbies eingeben...",
+    "settingsHeader": "Einstellungen der Runde",
+    "default": "Standard",
+    "durationLabel": "Rundendauer (Minuten)",
+    "targetLabel": "Mimik-Ziel ändern",
+    "toggleTargetOnHelp": "Neues Ziel jede Runde",
+    "toggleTargetOffHelp": "Vorheriges Ziel beibehalten, wenn es noch gültig ist",
+    "footerNote": "Nach dem Erstellen einer Lobby können die Einstellungen nicht mehr geändert werden.",
+    "submitButton": "Erstellen",
+    "createdSuccess": "Lobby erstellt — tritt ihr bei."
+  },
+  "lobby": {
+    "listPlayers": "Spielernliste",
+    "playersCount": "{{count}} Spieler",
+    "leave": "Verlassen",
+    "codeCopiedToast": "Der Code wurde kopiert!",
+    "start": "Starten",
+    "youSuffix": "(du)",
+    "hostSuffix": "(Host)",
+    "codeButton": "Lobby-Code",
+    "workspaceComing": "Warten auf das Spielstart des Hosts.",
+    "kick": "Kick",
+    "ban": "Sperren",
+    "banAria": "{{alias}} aus dieser Lobby sperren",
+    "copyClose": "Benachrichtigung schließen",
+    "startRequiresMin": "Mindestens {{required}} Spieler nötig zum Starten."
+  },
+  "roleCard": {
+    "youAreMimic": "Du bist ",
+    "mimicKeyword": "der Mimic",
+    "yourTargetPrefix": "Dein Ziel ist ",
+    "findMimic": "Finde den Mimic"
+  },
+  "chat": {
+    "placeholder": "Nachricht schreiben...",
+    "send": "Senden",
+    "maxLengthExceeded": "Die Nachricht darf {{max}} Zeichen nicht überschreiten.",
+    "tooShort": "Die Nachricht ist zu kurz.",
+    "system": {
+      "joined": "{{alias}} ist der Partie beigetreten",
+      "left": "{{alias}} hat die Partie verlassen",
+      "kicked": "{{alias}} wurde ausgewiesen",
+      "banned": "{{alias}} wurde gebannt"
+    },
+    "scrollToBottom": "Nach unten scrollen"
+  },
+  "voting": {
+    "timerLabel": "Das Abstimmungsende in {{time}}",
+    "skip": "Überspringen",
+    "vote": "Abstimmen",
+    "eliminated": "{{alias}} wurde eliminiert",
+    "noOneEliminated": "Niemand wurde eliminiert",
+    "votesReceived": "{{alias}}: {{count}} Stimmen",
+    "yourVote": "Abstimme",
+    "cannotChange": "Deine Stimme kann nicht geändert werden."
+  },
+  "reveal": {
+    "mimicWas": "Der Mimic war...",
+    "won": "Du hast gewonnen!",
+    "lost": "Du hast verloren!"
+  },
+  "errors": {
+    "generic": "Etwas ist schiefgelaufen.",
+    "invalidCode": "Dieser Code ist ungültig oder unbekannt.",
+    "roomNotFound": "Für diesen Code wurde kein Lobby gefunden.",
+    "nameTooShort": "Der Lobbyname muss mindestens {{min}} Zeichen lang sein.",
+    "tooLong": "Der Lobbyname ist zu lang (max. {{max}} Zeichen).",
+    "minPlayers": "{{current}} Spieler sind beigetreten — es sind mindestens {{required}} nötig, um zu starten.",
+    "timeout": "Die Runde ist zu Ende.",
+    "banned": "Du wurdest aus dieser Lobby gesperrt.",
+    "kicked": "Duwurdest aus.this Lobby ausgewiesen.",
+    "aliasInvalid": "Dieser Name is belegt oder ungültig (1-40 Zeichen).",
+    "invalidAvatar": "Dieser Avatar ist nicht verfügbar.",
+    "sessionReplaced": "Du spielst schon im anderen Tab.",
+    "gameStarted": "Dieses Spiel hat bereits begonnen"
+  },
+  "profile": {
+    "title": "Profil bearbeiten",
+    "avatarHeading": "Avatar",
+    "nameLabel": "Name",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "close": "Schließen"
+  }
+}

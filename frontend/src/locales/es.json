@@ -1,0 +1,154 @@
+{
+  "home": {
+    "title": "MIMIC",
+    "menu": {
+      "joinLobby": "Unirse a la sala",
+      "createLobby": "Crear sala",
+      "settings": "Ajustes"
+    },
+    "footer": {
+      "about": "acerca de",
+      "github": "github",
+      "credits": "créditos",
+      "versions": "versiones"
+    },
+    "modals": {
+      "settings": {
+        "title": "Ajustes",
+        "theme": {
+          "label": "Tema",
+          "system": "Sistema",
+          "dark": "Oscuro",
+          "light": "Claro"
+        },
+        "language": {
+          "label": "Idioma",
+          "options": {
+            "englishUs": "English (US)",
+            "englishUk": "English (UK)",
+            "russian": "Русский",
+            "ukrainian": "Українська",
+            "spanish": "Español",
+            "german": "Deutsch"
+          },
+          "apply": "Aplicar"
+        }
+      },
+      "about": {
+        "title": "Acerca de MIMIC",
+        "text": "MIMIC es un juego de deducción social por chat en red local para 3–15 jugadores. Cada uno recibe una identidad animal al azar. Un jugador se convierte secretamente el Mimic y elige a un rival que debe imitar sin hacerse notar en estilo, tono y hábitos — mientras el resto intenta descubrir al impostor.\n\nReglas:\n• Habla en el chat durante cada ronda y vota cuando termine el temporizador.\n• Los jugadores eliminados se convierten en espectadores (no pueden chatear ni votar), y su rol real no se revela hasta el final de la partida.\n• Omitir salta la eliminación; si todos los jugadores activos pulsan Omitir, la partida termina de inmediato.\n• Los jugadores normales solo ganan si el Mimic es eliminado sin superar el límite de errores permitido (1 error por cada 3 jugadores al inicio). En caso contrario, gana el Mimic."
+      },
+      "credits": {
+        "title": "Créditos",
+        "text": "Creado por DeNdyJr.\nDesarrollado con React, TypeScript, Express y Socket.IO.\nCódigo fuente: github.com/DeNdyJr-web/mimic"
+      },
+      "versions": {
+        "title": "Versiones",
+        "current": {
+          "version": "1.0.0",
+          "releaseDate": "2026-11-16",
+          "notes": "v1.0.0 — Lanzamiento inicial: lobbies multijugador por red local, roles secretas del Mimic y asignación de objetivo, votaciones ciegas por rondas, modo espectador, temas oscuro/claro y 6 idiomas."
+        }
+      }
+    }
+  },
+  "join": {
+    "back": "Volver",
+    "title": "Unirse a la sala",
+    "codePlaceholder": "Introduce un código...",
+    "joinButton": "Unirse",
+    "or": "o",
+    "findLobby": "Buscar una sala",
+    "refresh": "Actualizar salas",
+    "loading": "Buscando salas activas…",
+    "empty": "No hay salas activas en este anfitrión ahora mismo.",
+    "noCodeError": "Introduce un código para unirte."
+  },
+  "create": {
+    "back": "Volver",
+    "title": "Crear sala",
+    "namePlaceholder": "Introduce el nombre de la sala...",
+    "settingsHeader": "Ajustes de la partida",
+    "default": "Predeterminado",
+    "durationLabel": "Duración de la ronda (minutos)",
+    "targetLabel": "Cambiar objetivo del Mimic",
+    "toggleTargetOnHelp": "Nuevo objetivo cada ronda",
+    "toggleTargetOffHelp": "Mantener el objetivo anterior si sigue siendo válido",
+    "footerNote": "No podrás cambiar los ajustes después de crear la sala.",
+    "submitButton": "Crear",
+    "createdSuccess": "Sala creada — entra en ella."
+  },
+  "lobby": {
+    "listPlayers": "Lista de jugadores",
+    "playersCount": "{{count}} jugadores",
+    "leave": "Abandonar",
+    "codeCopiedToast": "¡El código ha sido copiado!",
+    "start": "Empezar",
+    "youSuffix": "(tú)",
+    "hostSuffix": "(anfitrión)",
+    "codeButton": "Código de la sala",
+    "workspaceComing": "Esperando a que el anfitrión inicie el juego.",
+    "kick": "Expulsar",
+    "ban": "Bloquear",
+    "banAria": "Bloquear {{alias}} de la sala",
+    "copyClose": "Cerrar notificación",
+    "startRequiresMin": "Se necesitan al menos {{required}} jugadores para empezar."
+  },
+  "roleCard": {
+    "youAreMimic": "Eres ",
+    "mimicKeyword": "el Mimic",
+    "yourTargetPrefix": "Tu objetivo es ",
+    "findMimic": "Encuentra al Mimic"
+  },
+  "chat": {
+    "placeholder": "Escribe un mensaje...",
+    "send": "Enviar",
+    "maxLengthExceeded": "El mensaje no puede superar los {{max}} caracteres.",
+    "tooShort": "El mensaje es demasiado corto.",
+    "system": {
+      "joined": "{{alias}} se unió a la partida",
+      "left": "{{alias}} abandonó la partida",
+      "kicked": "{{alias}} ha sido expulsado",
+      "banned": "{{alias}} ha sido baneado"
+    },
+    "scrollToBottom": "Ir al final"
+  },
+  "voting": {
+    "timerLabel": "La votación termina en {{time}}",
+    "skip": "Omitir",
+    "vote": "Votar",
+    "eliminated": "{{alias}} fue eliminado",
+    "noOneEliminated": "Nadie fue eliminado",
+    "votesReceived": "{{alias}}: {{count}} votos",
+    "yourVote": "Emite tu voto",
+    "cannotChange": "No puedes cambiar tu voto."
+  },
+  "reveal": {
+    "mimicWas": "El Mimic era...",
+    "won": "¡Has ganado!",
+    "lost": "¡Has perdido!"
+  },
+  "errors": {
+    "generic": "Algo salió mal.",
+    "invalidCode": "Ese código es inválido o desconocido.",
+    "roomNotFound": "No se encontró ninguna sala para ese código.",
+    "nameTooShort": "El nombre de la sala debe tener al menos {{min}} caracteres.",
+    "tooLong": "El nombre de la sala es demasiado largo (máximo {{max}} caracteres).",
+    "minPlayers": "{{current}} jugadores se han unido — se necesitan al menos {{required}} para empezar.",
+    "timeout": "La ronda ha terminado.",
+    "banned": "Has sido bloqueado de esta sala.",
+    "kicked": "Has sido expulsado de esta sala.",
+    "aliasInvalid": "Ese nombre ya está ocupado o no es válido (1-40 caracteres).",
+    "invalidAvatar": "Este avatar no está disponible.",
+    "sessionReplaced": "Ya estás jugando en otra pestaña.",
+    "gameStarted": "Este juego ya ha comenzado"
+  },
+  "profile": {
+    "title": "Editar perfil",
+    "avatarHeading": "Avatar",
+    "nameLabel": "Nombre",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "close": "Cerrar"
+  }
+}
