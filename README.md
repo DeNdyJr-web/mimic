@@ -1,7 +1,8 @@
-<img width="2560" height="1280" alt="Screenshot 2026-11-16 at 20-49-51 MIMIC" src="https://github.com/user-attachments/assets/6847ae78-fa7d-4b96-8266-dfd42c76223d" />
 # MIMIC
 
 MIMIC is a LAN social-deduction chat game for 3–15 players. Each player gets a random animal identity, and one of them is secretly the **Mimic** — who must quietly imitate a chosen target's style, tone, and habits while everyone else tries to spot the impostor.
+
+<img width="2560" height="1280" alt="Screenshot 2026-11-16 at 20-49-51 MIMIC" src="https://github.com/user-attachments/assets/6847ae78-fa7d-4b96-8266-dfd42c76223d" />
 
 ## How to Play
 
